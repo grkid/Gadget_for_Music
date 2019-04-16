@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <!-- 定义一个用于显示头像的ImageView -->
+    <TextView
+        android:id="@+id/SongPic"
+        android:gravity="center"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:textColor="#D3D3D3"
+        android:textSize="22sp"
+
+        android:baselineAlignBottom="true"
+        android:paddingLeft="8dp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/SongName"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:paddingLeft="8dp"
+            android:layout_weight="3"
+            android:textColor="#1D1D1C"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="-1"
+
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/SongArtist"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:paddingLeft="8dp"
+            android:layout_weight="2"
+            android:textColor="#B4B4B9"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="-1"
+
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</LinearLayout>
