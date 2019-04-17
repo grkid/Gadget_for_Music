@@ -10,7 +10,7 @@ import android.widget.TextView;
 /**
  * Created by CZY on 2019/2/27.
  */
-
+//暂时被弃用的模块
 public class SettingAdapter extends BaseAdapter {
     private String[] up;
     private String[] down;

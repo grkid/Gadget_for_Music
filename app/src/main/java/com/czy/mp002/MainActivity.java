@@ -61,6 +61,9 @@ public class MainActivity extends Activity {
 
 
 
+  private boolean isRecording=false;
+  private int timer=0;
+
 
     private ServiceConnection sc=new ServiceConnection() {
         @Override
@@ -99,16 +102,23 @@ public class MainActivity extends Activity {
         //权限相关代码
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP)
         {
+            //如果版本号大于安卓5
             int RPermission, WPermission;
             RPermission = mContext.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
             WPermission = mContext.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            int SoundRecordPermission=mContext.checkSelfPermission(Manifest.permission.RECORD_AUDIO);
             if (RPermission == PackageManager.PERMISSION_DENIED)
                 this.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
             if(WPermission==PackageManager.PERMISSION_DENIED)
                 this.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
+
+            if(SoundRecordPermission==PackageManager.PERMISSION_DENIED)
+                this.requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 3);
         }
         //权限相关代码
+
+        SoundRecorder.setContext(mContext);
 
         list_item=(ListView)findViewById(R.id.MainMusicListView);//找到控件
 
@@ -211,27 +221,28 @@ public class MainActivity extends Activity {
            }
        });
 
-        musicService.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+           musicService.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+               @Override
+               public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 /*
                 if(b)//b就是是否来自user，这句很重要
                     musicService.mp.seekTo(seekBar.getProgress());
                     */
-            }
+               }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+               @Override
+               public void onStartTrackingTouch(SeekBar seekBar) {
 
-            }
+               }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+               @Override
+               public void onStopTrackingTouch(SeekBar seekBar) {
 
-                    musicService.mp.seekTo(seekBar.getProgress());
-            }
+                   musicService.mp.seekTo(seekBar.getProgress());
+               }
 
-        });
+           });
 
         final ImageButton SeqButton=findViewById(R.id.SequenceButton);
         SeqButton.setOnClickListener(new View.OnClickListener() {
@@ -269,9 +280,19 @@ public class MainActivity extends Activity {
         settingButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Toast.makeText(MainActivity.this,"这里是为BP网络准备的API",Toast.LENGTH_SHORT).show();
-                Toast.makeText(MainActivity.this,"位于MainActivity.java 271行附近",Toast.LENGTH_SHORT).show();
-                return false;
+                if(!isRecording) {
+                    Toast.makeText(MainActivity.this, "开始录制", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this,"位于MainActivity.java 271行附近",Toast.LENGTH_SHORT).show();
+                    SoundRecorder.startRecord();
+
+
+                    isRecording=true;
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this, "正在录制中！", Toast.LENGTH_SHORT).show();
+                }
+                return true;
             }
         });
 
@@ -455,6 +476,28 @@ public class MainActivity extends Activity {
 
 
     public Handler handler=new Handler();//顾名思义
+    public Handler Record_Submit_handler=new Handler();
+    public Runnable Record_Submit_runnable=new Runnable() {
+        @Override
+        public void run() {
+            if (isRecording)
+                timer++;
+
+            if (timer == 160) {
+                isRecording = false;
+                timer = 0;
+                SoundRecorder.StopRecord();
+
+                String temp = SoundRecorder.file.getAbsolutePath();
+                Toast.makeText(MainActivity.this, temp, Toast.LENGTH_SHORT).show();
+                send_and_set();
+
+                //Record_Submit_handler.postDelayed(Record_Submit_runnable, 100);
+            }
+
+            Record_Submit_handler.postDelayed(Record_Submit_runnable, 100);
+        }
+    };
 
     public Runnable runnable=new Runnable() {
         @Override
@@ -477,11 +520,18 @@ public class MainActivity extends Activity {
             }
 
 
+
+
             handler.postDelayed(runnable,100);
             //延迟尽量小一些
         }
     };
 
+    private void send_and_set()
+    {
+        //连接到神经网络的部分
+
+    }
 
 
 
@@ -495,6 +545,7 @@ public class MainActivity extends Activity {
        setListBack();
 
         handler.post(runnable);
+        Record_Submit_handler.post(Record_Submit_runnable);
 
         ImageButton SeqButton=findViewById(R.id.SequenceButton);
         int temp=musicService.getSequenceMode();

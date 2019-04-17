@@ -4,10 +4,59 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.czy.mp002.SettingActivity">
 
-    <ListView
-        android:id="@+id/SettingListView"
+
+    <CheckBox
+        android:id="@+id/CheckBox_RecognitionIsValid"
+        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="45sp"
+
+        android:checked="true"
+        android:text="开启联网的环境声音识别" />
+
+    <TextView
+        android:id="@+id/TextView_TargetIP"
+        android:layout_width="match_parent"
+        android:layout_height="20sp"
+
+        android:text="目标服务器IP" />
+
+    <EditText
+        android:id="@+id/EditText_TargetIP"
+        style="@android:style/Widget.Holo.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="60sp"
+
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="192.168.1.1" />
+
+    <TextView
+        android:id="@+id/TextView_TargetPort"
+        android:layout_width="match_parent"
+        android:layout_height="20sp"
+
+        android:text="目标端口" />
+
+    <EditText
+        android:id="@+id/EditText_TargetPort"
+        style="@android:style/Widget.Holo.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="60sp"
+
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="8086" />
+
+    <Button
+        android:id="@+id/Button_InputNetConfig"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="80sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="50sp"
+
+        android:text="确认" />
 </LinearLayout>
