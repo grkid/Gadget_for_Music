@@ -480,6 +480,8 @@ public class MainActivity extends Activity {
     public Runnable Record_Submit_runnable=new Runnable() {
         @Override
         public void run() {
+
+
             if (isRecording)
                 timer++;
 
@@ -489,11 +491,13 @@ public class MainActivity extends Activity {
                 SoundRecorder.StopRecord();
 
                 String temp = SoundRecorder.file.getAbsolutePath();
-                Toast.makeText(MainActivity.this, temp, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, temp, Toast.LENGTH_SHORT).show();
                 send_and_set();
 
-                //Record_Submit_handler.postDelayed(Record_Submit_runnable, 100);
+                Record_Submit_handler.postDelayed(Record_Submit_runnable, 100);
             }
+
+
 
             Record_Submit_handler.postDelayed(Record_Submit_runnable, 100);
         }
@@ -530,6 +534,22 @@ public class MainActivity extends Activity {
     private void send_and_set()
     {
         //连接到神经网络的部分
+        if(NetworkConfig.isValid==false) {
+            Toast.makeText(MainActivity.this, "禁止使用联网的场景识别", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String[] outputStr=new String[]{"真安静呢~你是在教室还是图书馆？","在教室就要好好学习，别玩手机","敲键盘的声音小一点，别影响到其他同学~"};
+        int rand=(int)(Math.random()*100)%3;
+
+        AlertDialog a=null;
+        AlertDialog.Builder b=null;
+        b=new AlertDialog.Builder(mContext);
+        b.setTitle("声音模式：普通");
+        musicService.setequalizerMode(0);
+        b.setMessage(outputStr[rand]);
+        a=b.create();
+        a.show();
+
 
     }
 

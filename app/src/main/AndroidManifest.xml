@@ -12,9 +12,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher2"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        >
         <activity
             android:name=".MainActivity"
+            android:theme="@style/AppTheme"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,7 +27,7 @@
             android:name=".SettingActivity"
             android:theme="@style/Theme.AppCompat.DayNight" />
         <activity android:name=".MusicActivity"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme_Music"/>
     </application>
 
 </manifest>

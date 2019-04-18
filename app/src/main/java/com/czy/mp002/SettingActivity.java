@@ -39,6 +39,16 @@ public class SettingActivity extends AppCompatActivity {
         TargetPort_in=findViewById(R.id.EditText_TargetPort);
 
         MakeSureButton=findViewById(R.id.Button_InputNetConfig);
+
+        isRecognitionValid.setChecked(NetworkConfig.isValid);
+        if(!NetworkConfig.isValid)
+        {
+            TargetIP.setVisibility(View.INVISIBLE);
+            TargetPort.setVisibility(View.INVISIBLE);
+            TargetIP_in.setVisibility(View.INVISIBLE);
+            TargetPort_in.setVisibility(View.INVISIBLE);
+            MakeSureButton.setVisibility(View.INVISIBLE);
+        }
     }
     private void setListeners()
     {

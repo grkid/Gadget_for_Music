@@ -32,6 +32,10 @@
             android:singleLine="true"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="-1"
+            android:shadowColor="#ffffff"
+            android:shadowRadius="2.0"
+            android:shadowDx="0"
+            android:shadowDy="0"
 
             android:textSize="20sp" />
 
@@ -44,6 +48,10 @@
             android:textColor="#B4B4B9"
             android:singleLine="true"
             android:ellipsize="marquee"
+            android:shadowColor="#1a1a1a"
+            android:shadowRadius="2.0"
+            android:shadowDx="0"
+            android:shadowDy="0"
             android:marqueeRepeatLimit="-1"
 
             android:textSize="14sp" />
