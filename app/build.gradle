@@ -5,6 +5,7 @@ android {
     defaultConfig {
         applicationId "com.czy.mp002"
         minSdkVersion 21
+        useLibrary'org.apache.http.legacy'
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"

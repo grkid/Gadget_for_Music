@@ -38,6 +38,9 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -58,11 +61,12 @@ public class MainActivity extends Activity {
     private MusicService musicService;
 
   private boolean isIntoMusicActivity=false;
+  public SoundRecorder_wav sr_wav;
 
 
 
   private boolean isRecording=false;
-  private int timer=0;
+  //private int timer=0;
 
 
     private ServiceConnection sc=new ServiceConnection() {
@@ -94,9 +98,6 @@ public class MainActivity extends Activity {
        //底下自己写，上边不要动。
 
         //OnCreate会很乱……要不然不知道怎么把握方法调用链
-
-
-
         mContext=MainActivity.this;//找到上下文
 
         //权限相关代码
@@ -118,7 +119,8 @@ public class MainActivity extends Activity {
         }
         //权限相关代码
 
-        SoundRecorder.setContext(mContext);
+        //SoundRecorder.setContext(mContext);
+        sr_wav=new SoundRecorder_wav(MainActivity.this);
 
         list_item=(ListView)findViewById(R.id.MainMusicListView);//找到控件
 
@@ -283,7 +285,9 @@ public class MainActivity extends Activity {
                 if(!isRecording) {
                     Toast.makeText(MainActivity.this, "开始录制", Toast.LENGTH_SHORT).show();
                     //Toast.makeText(MainActivity.this,"位于MainActivity.java 271行附近",Toast.LENGTH_SHORT).show();
-                    SoundRecorder.startRecord();
+                    //SoundRecorder.startRecord();
+                    NetAdapter.recordStartTime=System.currentTimeMillis();
+                    sr_wav.startRecord();
 
 
                     isRecording=true;
@@ -295,6 +299,9 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
+
+        NetAdapter.client.setTimeout(30000);
+        //设置超时时间为30秒
 
 
 
@@ -472,34 +479,42 @@ public class MainActivity extends Activity {
         return (x < a) ? a : (x > b) ? b : x;
     }
 
-
-
-
-    public Handler handler=new Handler();//顾名思义
+    public Handler handler=new Handler();
     public Handler Record_Submit_handler=new Handler();
     public Runnable Record_Submit_runnable=new Runnable() {
         @Override
         public void run() {
-
-
+            /*
             if (isRecording)
                 timer++;
 
             if (timer == 160) {
                 isRecording = false;
                 timer = 0;
-                SoundRecorder.StopRecord();
+                //SoundRecorder.StopRecord();
+                sr_wav.stopRecord();
 
-                String temp = SoundRecorder.file.getAbsolutePath();
+                //String temp = SoundRecorder.file.getAbsolutePath();
                 //Toast.makeText(MainActivity.this, temp, Toast.LENGTH_SHORT).show();
                 send_and_set();
 
                 Record_Submit_handler.postDelayed(Record_Submit_runnable, 100);
             }
-
-
-
             Record_Submit_handler.postDelayed(Record_Submit_runnable, 100);
+            */
+
+            if(isRecording)
+            {
+                long time=System.currentTimeMillis();
+                if(time-NetAdapter.recordStartTime>=10000+3000)
+                {
+                    isRecording=false;
+                    sr_wav.stopRecord();
+                    send_and_set();
+                }
+            }
+
+            Record_Submit_handler.postDelayed(Record_Submit_runnable,100);
         }
     };
 
@@ -535,9 +550,12 @@ public class MainActivity extends Activity {
     {
         //连接到神经网络的部分
         if(NetworkConfig.isValid==false) {
-            Toast.makeText(MainActivity.this, "禁止使用联网的场景识别", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "禁止使用联网的环境声音识别", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        /*
+        //以下是demo专用部分
         String[] outputStr=new String[]{"真安静呢~你是在教室还是图书馆？","在教室就要好好学习，别玩手机","敲键盘的声音小一点，别影响到其他同学~"};
         int rand=(int)(Math.random()*100)%3;
 
@@ -549,6 +567,31 @@ public class MainActivity extends Activity {
         b.setMessage(outputStr[rand]);
         a=b.create();
         a.show();
+        */
+        try {
+            RequestParams params = new RequestParams();
+            params.put("android_test.wav", sr_wav.wavFile);
+            String url="http://"+NetworkConfig.ip+":"+String.valueOf(NetworkConfig.port);
+            NetAdapter.client.post(url, params, new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int i, org.apache.http.Header[] headers, byte[] bytes) {
+                    String temp=new String(bytes);
+                    Toast.makeText(MainActivity.this,"发送成功 "+temp,Toast.LENGTH_LONG).show();
+
+                }
+
+                @Override
+                public void onFailure(int i, org.apache.http.Header[] headers, byte[] bytes, Throwable throwable) {
+                    Toast.makeText(MainActivity.this,"发送失败",Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+
+        }
+
 
 
     }
@@ -585,10 +628,6 @@ public class MainActivity extends Activity {
             //Toast.makeText(MainActivity.this,"随机播放",Toast.LENGTH_SHORT).show();
         }
 
-
-
-
-
         super.onResume();
     }
 
@@ -615,10 +654,6 @@ public class MainActivity extends Activity {
             String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
 
             int size = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE));
-
-
-
-
 
 
             //先不去用size这个变量。最后再用来计算（筛选）

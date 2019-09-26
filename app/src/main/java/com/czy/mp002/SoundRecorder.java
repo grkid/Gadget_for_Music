@@ -31,7 +31,6 @@ public class SoundRecorder {
     {
         try
         {
-
             recorder=new MediaRecorder();
             recorder.reset();
 
@@ -41,17 +40,11 @@ public class SoundRecorder {
             file.delete();
             file.createNewFile();
 
-
-
-
-
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS );
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             recorder.setOutputFile(file);
             //recorder.setMaxDuration(5000);
-
-
 
             //recorder.prepare();
             recorder.prepare();
@@ -59,7 +52,6 @@ public class SoundRecorder {
         }
         catch(Exception e)
         {
-
             e.printStackTrace();
         }
 
@@ -68,7 +60,6 @@ public class SoundRecorder {
     public static void StopRecord()
     {
         try {
-
             recorder.stop();
             recorder.reset();
             recorder.release();
@@ -80,5 +71,4 @@ public class SoundRecorder {
             e.printStackTrace();
         }
     }
-
 }
